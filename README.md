@@ -28,7 +28,7 @@
 <dependency>
     <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-annotations</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@
 <dependency>
      <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -84,7 +84,7 @@
               <docletArtifact>
                  <groupId>com.github.uhfun</groupId>
                  <artifactId>swagger-more-javadoc</artifactId>
-                 <version>1.0.0-SNAPSHOT</version>
+                 <version>1.0.0</version>
               </docletArtifact>
               <docletArtifact>
                 <groupId>your.groupId</groupId>
@@ -130,7 +130,6 @@ public class SwaggerConfig {
 ```java
 @Api(tags = "用户API")
 public interface UserService {
-
     @ApiMethod(value = "保存用户", params = {
             @ApiParam(name = "user", value = "用户")
     })
@@ -139,8 +138,6 @@ public interface UserService {
 ```
 
 > 如果引入了 swagger-more-javadoc , 可以将注解替换为注释
-
-
 ```java
 /**
  * 用户API
@@ -187,10 +184,18 @@ public class User implements Serializable {
 
 
 
+### 四、访问文档页面
+
+```
+http://baseUrl:port/api/dubbo
+```
+
+
+
 ## FAQ
 
 
-### 一、配置
+### 一、页面请求404
 
 需要开启或者在配置文件中配置**SpringMVC** 能够进行**http**请求的访问
 
@@ -203,6 +208,8 @@ public class User implements Serializable {
 ### 二、Dubbo接口注册的时候，bean 名称为类名（第一个字母小写）
 
 因为Swagger-more中自定义Controller 接收请求的时候直接按类名获取bean，一般也都是这个命名，所以暂时没做处理...
+
+
 
 
 ## 版权信息
