@@ -1,23 +1,26 @@
 # Swagger-more
 
 
-### 关于项目
+## 关于项目
 
-​		公司内测试需要dubbo接口提供文档， 实习的闲暇之余有好奇Swagger的代码，看看它怎么大致的流程如何。之前又嫌单测跑用例麻烦，后面写了一个调用Spring Bean方法的Controller 。因此催生了Swagger-more。
-
-**重在扩展，代码不多**
+​		公司内测试需要dubbo接口提供文档， 实习的闲暇之余有好奇Swagger的代码，看看它怎么大致的流程如何。之前又嫌单测跑用例麻烦，后面写了一个调用Spring Bean方法的Controller 。因此催生了Swagger-more。**重在扩展，代码不多**
 
 
 
-### 支持功能
+## 支持的功能
+
+1. 自动生成dubbo接口文档，同springfox 的JSON API
+2. 接口支持调试，支持泛型调用，支持多对象传参
+3. 支持javadoc生成接口信息的注解
+4. 符合java接口文档的新UI
 
 
 
 
-### 如何接入
+## 如何接入
 
 
-#### 1、引入依赖
+### 一、引入依赖
 
 1. 在Api 或者 实体类模块中引入注解的依赖, 整个包只有一个@ApiMethod的注解（将接口和实现分离，保证Api模块的独立）
 
@@ -40,24 +43,15 @@
 ```
 
 3. 如果需要使用接口方法的Javadoc 生成文档在Server服务层里引入支持javadoc的依赖
+  在api包的pom里加上 plugin
 
-```xml
-<dependency>
-     <groupId>com.github.uhfun</groupId>
-    <artifactId>swagger-more-javadoc</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-</dependency>
-```
+  * 1) 替换 "your.app.api.package" 为你自己的包名
 
-并且在对应需要使用javadoc的包的pom里加上 plugin
+    ​	例如 com.mygroup.my-porject-api
 
-1. 替换 "your.app.api.package" 为你自己的包名
+    ​	如果有多个用 「,」或「:」或「;」 隔开
 
-   例如 com.mygroup.my-porject-api
-
-   如果有多个用 「,」或「:」或「;」 隔开
-
-2. 替换   
+  * 2) 替换项目API模块 的 your.groupId、your.artifacId、your.version
 
    ````xml
    <docletArtifact>
@@ -67,19 +61,9 @@
    </docletArtifact>
    ````
 
-   为项目API模块 的 your.groupId、your.artifacId、your.version
-   例如:
-    ````xml
-    <docletArtifact>    
-       <groupId>com.mygroup</groupId>    
-       <artifactId>my-porject-api</artifactId>    
-       <version>1.0.0-SNAPSHOT</version>
-    </docletArtifact>
-    ````
 
 
-
-具体配置如下: 
+**具体配置如下**
 
 ```xml
 <build>
@@ -120,7 +104,9 @@
 </build>
 ```
 
-#### 2、添加一个配置类或者在现有配置类中加上
+
+
+### 二、添加配置
 
 ```java
 @Configuration
@@ -131,10 +117,9 @@ public class SwaggerConfig {
 
 
 
-### 如何使用
+### 三、添加注解
 
-
-#### 1、方法注解
+#### 方法注解
 
 结构如下
 
@@ -144,7 +129,7 @@ public class SwaggerConfig {
 
 ```java
 @Api(tags = "用户API")
-public interface OrganizationService {
+public interface UserService {
 
     @ApiMethod(value = "保存用户", params = {
             @ApiParam(name = "user", value = "用户")
@@ -158,11 +143,11 @@ public interface OrganizationService {
 
 ```java
 /**
- * 集团相关API
+ * 用户API
  *
- * @author fuhangbo
+ * @author uhfun
  */
-public interface OrganizationService {
+public interface UserService {
 
     /**
      * 保存用户
@@ -175,7 +160,8 @@ public interface OrganizationService {
 ```
 
 
-#### 2、实体类注解
+
+#### 实体类注解
 
 value为解释 name可以不用设置， Swagger在解析的时候可以获取到
 
@@ -200,10 +186,11 @@ public class User implements Serializable {
 ```
 
 
-### 注意点
+
+## FAQ
 
 
-#### 1、配置
+### 一、配置
 
 需要开启或者在配置文件中配置**SpringMVC** 能够进行**http**请求的访问
 
@@ -213,10 +200,9 @@ public class User implements Serializable {
 ```
 
 
-#### 3、Dubbo接口注册的时候，bean 名称要为类名（第一个字母小写）
+### 二、Dubbo接口注册的时候，bean 名称为类名（第一个字母小写）
 
 因为Swagger-more中自定义Controller 接收请求的时候直接按类名获取bean，一般也都是这个命名，所以暂时没做处理...
-
 
 
 ## 版权信息
