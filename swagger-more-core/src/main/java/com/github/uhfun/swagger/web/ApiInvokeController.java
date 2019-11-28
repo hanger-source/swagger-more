@@ -16,7 +16,6 @@
  *
  *
  */
-
 package com.github.uhfun.swagger.web;
 
 import com.alibaba.fastjson.JSONObject;

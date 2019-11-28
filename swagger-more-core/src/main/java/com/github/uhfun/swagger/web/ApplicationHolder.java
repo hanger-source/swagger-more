@@ -16,7 +16,6 @@
  *
  *
  */
-
 package com.github.uhfun.swagger.web;
 
 import org.springframework.beans.BeansException;

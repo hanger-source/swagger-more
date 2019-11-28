@@ -16,7 +16,6 @@
  *
  *
  */
-
 package com.github.uhfun.swagger.util;
 
 import javax.servlet.http.HttpServletRequest;

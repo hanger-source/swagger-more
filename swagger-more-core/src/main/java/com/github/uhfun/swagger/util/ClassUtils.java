@@ -16,7 +16,6 @@
  *
  *
  */
-
 package com.github.uhfun.swagger.util;
 
 import io.swagger.annotations.ApiModelProperty;
