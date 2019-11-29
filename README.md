@@ -1,4 +1,4 @@
-# Swagger-more
+# swagger-more
 [![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more) ![jdk1.8](https://img.shields.io/badge/jdk-1.8-blue.svg) 
 
 ## 关于项目
