@@ -1,5 +1,6 @@
 # Swagger-more
-[![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more) ![jdk1.8](https://img.shields.io/badge/jdk-1.8-orange.svg) 
+[![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more) ![jdk1.8](https://img.shields.io/badge/jdk-1.8-blue.svg) 
+
 ## 关于项目
 
 ​		公司内部测试需要dubbo接口提供文档， 实习的闲暇之余有好奇Swagger2的代码，看看它怎么大致的流程如何，后面又嫌单机测试跑测试用例麻烦 。由此想到基于springfox swagger2来实现一个Swagger-more。**重在扩展，代码不多**
