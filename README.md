@@ -7,6 +7,14 @@
 
 
 
+
+
+## 界面展示
+
+![]()
+
+
+
 ## 支持的功能
 
 1. 自动生成dubbo接口文档，同springfox 的JSON API
@@ -184,7 +192,9 @@ public class User implements Serializable {
 
 
 
-### 四、访问文档页面
+### 四、启动项目、访问文档页面
+
+如果需要根据javadoc生成注解，启动前执行 `mvn package` 
 
 ```
 http://baseUrl:port/api/dubbo
