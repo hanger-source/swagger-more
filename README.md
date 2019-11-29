@@ -210,7 +210,7 @@ http://baseUrl:port/api/dubbo
 
 ## 实现原理
 
-Springfox在启动时注入了所有 **`RequestHandler`**的实现类
+Springfox在启动时注入了所有 **`RequestHandler`** 的实现类
 
 ```java
  @Autowired
@@ -223,7 +223,7 @@ Springfox在启动时注入了所有 **`RequestHandler`**的实现类
   }
 ```
 
-官方只有针对mvc场景下的&**`WebMvcRequestHandlerProvider` **的实现
+官方只有针对mvc场景下的 **`WebMvcRequestHandlerProvider`**的实现
 
 Swagger-more添加了对于暴露的dubbo api的接口实现 **`com.github.uhfun.swagger.extension.ApiRequestHandler`**
 
