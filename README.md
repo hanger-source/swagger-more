@@ -3,9 +3,13 @@
 
 ## 关于项目
 
-​		公司内测试需要dubbo接口提供文档， 实习的闲暇之余有好奇Swagger的代码，看看它怎么大致的流程如何。之前又嫌单测跑用例麻烦，后面写了一个调用Spring Bean方法的Controller 。因此催生了Swagger-more。**重在扩展，代码不多**
+​		公司内部测试需要dubbo接口提供文档， 实习的闲暇之余有好奇Swagger2的代码，看看它怎么大致的流程如何，后面又嫌单机测试跑测试用例麻烦 。由此想到基于springfox swagger2来实现一个Swagger-more。**重在扩展，代码不多**
 
+​        github上也有类似功能的项目
 
+* https://github.com/Sayi/swagger-dubbo
+
+* https://github.com/zhaojigang/springfox，动态生成带注解的Controller来进行api信息的读取，但是个人感觉这个做法不是特别优雅，因为springfox官方已经提供了一套扩展性比较强的接口来可以实现api信息的读取。
 
 
 
@@ -18,7 +22,7 @@
 ## 支持的功能
 
 1. 自动生成dubbo接口文档，同springfox 的JSON API
-2. 接口支持调试，支持泛型调用，支持多对象传参
+2. 接口支持调试，支持泛型调用，解决接口方法多对象传参以及方法重载的问题
 3. 支持javadoc生成接口信息的注解
 4. 符合java接口文档的新UI
 
@@ -198,6 +202,38 @@ public class User implements Serializable {
 
 ```
 http://baseUrl:port/api/dubbo
+```
+
+
+
+## 实现原理
+
+Springfox在启动时注入了所有 **`RequestHandler`**的实现类
+
+```java
+ @Autowired
+  public DocumentationPluginsBootstrapper(
+      DocumentationPluginsManager documentationPluginsManager,
+      List<RequestHandlerProvider> handlerProviders,
+      DocumentationCache scanned,
+    	...) {
+    
+  }
+```
+
+官方只有针对mvc场景下的&**`WebMvcRequestHandlerProvider` **的实现
+
+Swagger-more添加了对于暴露的dubbo api的接口实现 **`com.github.uhfun.swagger.extension.ApiRequestHandler`**
+
+以及其他对于用于构造api文档的一些扩展
+
+```java
+com.github.uhfun.swagger.extension.ApiMethodModelsProvider
+com.github.uhfun.swagger.extension.ApiMethodReader
+com.github.uhfun.swagger.extension.ApiParamReader
+com.github.uhfun.swagger.extension.ApiRequestHandler
+com.github.uhfun.swagger.extension.ApiRequestHandlerProvider
+com.github.uhfun.swagger.extension.ModelExtendsBuilder
 ```
 
 
