@@ -1,5 +1,5 @@
 # Swagger-more
-
+[![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more)
 
 ## 关于项目
 
