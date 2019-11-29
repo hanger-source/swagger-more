@@ -9,7 +9,9 @@
 
 * https://github.com/Sayi/swagger-dubbo
 
-* https://github.com/zhaojigang/springfox，动态生成带注解的Controller来进行api信息的读取，但是个人感觉这个做法不是特别优雅，因为springfox官方已经提供了一套扩展性比较强的接口来可以实现api信息的读取。
+* https://github.com/zhaojigang/springfox
+
+  动态生成带注解的Controller来进行api信息的读取，但是个人感觉这个做法不是特别优雅，因为springfox官方已经提供了一套扩展性比较强的接口来可以实现api信息的读取。
 
 
 
