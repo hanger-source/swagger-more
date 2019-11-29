@@ -17,7 +17,7 @@
 
 ## 界面展示
 
-![UI](https://github.com/uhfun/swagger-more/blob/master/ui.png)
+![UI](https://raw.githubusercontent.com/uhfun/swagger-more/master/ui.png)
 
 > **依旧支持官方的swagger ui**
 >
