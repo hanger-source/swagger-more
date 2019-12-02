@@ -18,10 +18,10 @@
  */
 package com.github.uhfun.swagger.extension;
 
-import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.fasterxml.classmate.TypeResolver;
 import com.github.uhfun.swagger.annotations.ApiMethod;
 import com.github.uhfun.swagger.common.SwaggerMoreException;
+import com.github.uhfun.swagger.dubbo.ServiceBeans;
 import com.github.uhfun.swagger.util.ClassUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -46,8 +46,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,6 +58,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static springfox.documentation.builders.BuilderDefaults.nullToEmptyList;
 import static springfox.documentation.spi.service.contexts.Orderings.byPatternsCondition;
 
@@ -68,39 +69,30 @@ import static springfox.documentation.spi.service.contexts.Orderings.byPatternsC
 @ApiRequestHandlerProvider.Body
 public class ApiRequestHandlerProvider implements RequestHandlerProvider {
 
-    private final List<ServiceBean> serviceBeans;
     private final HandlerMethodResolver methodResolver;
     private final TypeResolver typeResolver;
+    private final ServiceBeans serviceBeans;
 
     @Autowired
-    public ApiRequestHandlerProvider(List<ServiceBean> serviceBeans,
-                                     HandlerMethodResolver methodResolver,
-                                     TypeResolver typeResolver) {
-        this.serviceBeans = serviceBeans;
+    public ApiRequestHandlerProvider(HandlerMethodResolver methodResolver,
+                                     TypeResolver typeResolver,
+                                     ServiceBeans serviceBeans) {
         this.methodResolver = methodResolver;
         this.typeResolver = typeResolver;
+        this.serviceBeans = serviceBeans;
     }
 
     @Override
     public List<RequestHandler> requestHandlers() {
         return byPatternsCondition().sortedCopy(nullToEmptyList(serviceBeans).stream()
                 .filter(bean -> AnnotatedElementUtils.hasAnnotation(bean.getInterfaceClass(), Api.class))
-                .reduce(newArrayList(), toMappingEntries(), (o1, o2) -> o1)
-                .stream().map(toRequestHandler()).collect(Collectors.toList()));
-    }
-
-    private BiFunction<List<HandlerMethod>, ? super ServiceBean,
-            List<HandlerMethod>> toMappingEntries() {
-        return (list, bean) -> {
-            Object object = AopUtils.isAopProxy(bean.getRef())
-                    ? AopProxyUtils.getSingletonTarget(bean.getRef()) : bean.getRef();
-            list.addAll(Arrays.stream(bean.getInterfaceClass().getDeclaredMethods())
-                    .filter(method -> !Modifier.isStatic(method.getModifiers()))
-                    .filter(method -> AnnotatedElementUtils.hasAnnotation(method, ApiMethod.class))
-                    .map(method -> new HandlerMethod(object, method))
-                    .collect(Collectors.toList()));
-            return list;
-        };
+                .map(bean -> {
+                    Object target = AopUtils.isAopProxy(bean.getRef()) ? AopProxyUtils.getSingletonTarget(bean.getRef()) : bean.getRef();
+                    return Arrays.stream(bean.getInterfaceClass().getDeclaredMethods())
+                            .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                            .filter(method -> AnnotatedElementUtils.hasAnnotation(method, ApiMethod.class))
+                            .map(method -> new HandlerMethod(target, method)).collect(Collectors.toList());
+                }).flatMap(Collection::stream).map(toRequestHandler()).collect(toList()));
     }
 
     private Function<HandlerMethod, RequestHandler> toRequestHandler() {
