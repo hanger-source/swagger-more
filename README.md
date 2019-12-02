@@ -50,7 +50,7 @@
 <dependency>
     <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-annotations</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -60,7 +60,7 @@
 <dependency>
      <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -106,7 +106,7 @@
               <docletArtifact>
                  <groupId>com.github.uhfun</groupId>
                  <artifactId>swagger-more-javadoc</artifactId>
-                 <version>1.0.0</version>
+                 <version>1.0.1-SNAPSHOT</version>
               </docletArtifact>
               <docletArtifact>
                 <groupId>your.groupId</groupId>
