@@ -127,7 +127,7 @@ public class ApiRequestHandlerProvider implements RequestHandlerProvider {
     private Class<?> mergeIntoGeneratedType(List<Class> parameters, Method method) {
         ApiMethod apiMethod = AnnotationUtils.findAnnotation(method, ApiMethod.class);
         if (isNull(apiMethod)) {
-            throw new SwaggerMoreException("Method " + method.getDeclaringClass().getName() + "." + method.getName() + "has more than two complex parameters that must be annotated @ApiMethod with @ApiParam");
+            throw new SwaggerMoreException("Method " + method.getDeclaringClass().getName() + "." + method.getName() + " has more than two complex parameters that must be annotated @ApiMethod with @ApiParam");
         }
         String className = DEFAULT_PACKAGE_NAME +
                 method.getDeclaringClass().getSimpleName() + DOT +

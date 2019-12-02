@@ -55,8 +55,10 @@ public class ApiInfo {
     private void readClassDoc() {
         hidden |= classDoc.getRawCommentText().contains("@hidden");
         deprecated |= classDoc.getRawCommentText().contains("@deprecated");
-        if (!StringUtils.isEmpty(classDoc.getRawCommentText())) {
+        if (!StringUtils.isEmpty(classDoc.commentText())) {
             tag = classDoc.commentText();
+        } else {
+            tag = classDoc.typeName();
         }
     }
 
