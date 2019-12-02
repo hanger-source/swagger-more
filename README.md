@@ -35,6 +35,7 @@
 2. 接口支持调试，支持泛型调用，解决接口方法多对象传参以及方法重载的问题
 3. 支持javadoc生成接口信息的注解
 4. 兼容springfox swagger2的ui、提供一个符合java接口文档的新UI
+5. 兼容alibaba dubbo 和 apache dubbo
 
 
 
