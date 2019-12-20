@@ -19,6 +19,7 @@
 package com.github.uhfun.swagger.configuration;
 
 import com.fasterxml.classmate.TypeResolver;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -33,6 +34,7 @@ import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 import springfox.documentation.spring.web.scanners.MediaTypeReader;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2JacksonModule;
 
@@ -72,6 +74,7 @@ import java.util.List;
         ApiListingScannerPlugin.class
 })
 @Conditional({SpringfoxSupportConfiguration.EnableSwagger2MissingConditional.class})
+@ConditionalOnMissingBean(annotation = EnableSwagger2.class)
 public class SpringfoxSupportConfiguration {
 
     @Bean
@@ -109,15 +112,10 @@ public class SpringfoxSupportConfiguration {
         return new HandlerMethodResolver(resolver);
     }
 
-    @Bean
-    public TypeResolver typeResolver() {
-        return new TypeResolver();
-    }
-
     static final class EnableSwagger2MissingConditional implements Condition {
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            // 没有添加@EnableSwagger2 启用这个配置
+            // 非Spring Boot 应用 没有添加@EnableSwagger2 启用这个配置
             return !context.getRegistry().containsBeanDefinition(Swagger2DocumentationConfiguration.class.getName());
         }
     }

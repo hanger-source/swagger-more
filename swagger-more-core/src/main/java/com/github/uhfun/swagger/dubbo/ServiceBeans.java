@@ -60,6 +60,14 @@ public class ServiceBeans extends AbstractList<ServiceBean> implements Initializ
             for (Object bean : applicationContext.getBeansOfType(alibabaDubboClass).values()) {
                 serviceBeanList.add(new AlibabaDubboServiceBean((com.alibaba.dubbo.config.spring.ServiceBean) bean));
             }
+            if (serviceBeanList.isEmpty()) {
+                Class<?> serviceClazz = ClassUtils.forName("com.alibaba.dubbo.config.annotation.Service", ClassUtils.getDefaultClassLoader());
+                for (Object object : applicationContext.getBeansWithAnnotation((Class<? extends com.alibaba.dubbo.config.annotation.Service>) serviceClazz).values()) {
+                    Class interfaceClass = object.getClass().getAnnotation(com.alibaba.dubbo.config.annotation.Service.class).interfaceClass();
+                    serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                }
+            }
+
         } catch (ClassNotFoundException | BeansException e) {
             log.warn(e.getMessage());
         }
@@ -70,6 +78,13 @@ public class ServiceBeans extends AbstractList<ServiceBean> implements Initializ
             Class alibabaDubboClass = ClassUtils.forName("org.apache.dubbo.config.spring.ServiceBean", ClassUtils.getDefaultClassLoader());
             for (Object bean : applicationContext.getBeansOfType(alibabaDubboClass).values()) {
                 serviceBeanList.add(new ApacheDubboServiceBean((org.apache.dubbo.config.spring.ServiceBean) bean));
+            }
+            if (serviceBeanList.isEmpty()) {
+                Class<?> serviceClazz = ClassUtils.forName("org.apache.dubbo.config.annotation.Service", ClassUtils.getDefaultClassLoader());
+                for (Object object : applicationContext.getBeansWithAnnotation((Class<? extends org.apache.dubbo.config.annotation.Service>) serviceClazz).values()) {
+                    Class interfaceClass = object.getClass().getAnnotation(org.apache.dubbo.config.annotation.Service.class).interfaceClass();
+                    serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                }
             }
         } catch (ClassNotFoundException | BeansException e) {
             log.warn(e.getMessage());
