@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static springfox.documentation.spring.web.paths.Paths.splitCamelCase;
 
 /**
  * @author uhfun
@@ -81,7 +80,7 @@ public class ApiRequestHandler implements RequestHandler {
     @Override
     public String groupName() {
         Class<?> apiClass = handlerMethod.getBeanType();
-        return splitCamelCase(apiClass.getInterfaces()[0].getSimpleName(), "-").replace("/", "").toLowerCase();
+        return apiClass.getInterfaces()[0].getSimpleName();
     }
 
     @Override

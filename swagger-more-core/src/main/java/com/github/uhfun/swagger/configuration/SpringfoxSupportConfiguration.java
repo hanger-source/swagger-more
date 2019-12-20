@@ -34,6 +34,7 @@ import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 import springfox.documentation.spring.web.scanners.MediaTypeReader;
+import springfox.documentation.swagger.web.SwaggerApiListingReader;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2JacksonModule;
@@ -46,12 +47,13 @@ import java.util.List;
 @Configuration
 @ComponentScans({
         @ComponentScan(basePackages = {
-                "springfox.documentation.swagger.web",
                 "springfox.documentation.swagger2.web",
                 "springfox.documentation.schema",
                 "springfox.documentation.swagger.schema",
                 "springfox.documentation.swagger2.mappers",
                 "springfox.documentation.spring.web.plugins"}),
+        @ComponentScan(basePackages = "springfox.documentation.swagger.web",
+                excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SwaggerApiListingReader.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.scanners",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MediaTypeReader.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.operation",
