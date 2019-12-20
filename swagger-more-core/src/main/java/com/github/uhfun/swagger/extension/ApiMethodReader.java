@@ -105,7 +105,11 @@ public class ApiMethodReader implements OperationBuilderPlugin {
     private void readTags(OperationContext context) {
         Optional<Api> apiOptional = context.findControllerAnnotation(Api.class);
         if (apiOptional.isPresent()) {
-            context.operationBuilder().tags(newHashSet(apiOptional.get().tags()));
+            String tag;
+            if (apiOptional.get().tags().length > 0 || StringUtils.isEmpty(tag = apiOptional.get().tags()[0])) {
+                tag = context.getGroupName();
+            }
+            context.operationBuilder().tags(newHashSet(tag));
         }
     }
 
