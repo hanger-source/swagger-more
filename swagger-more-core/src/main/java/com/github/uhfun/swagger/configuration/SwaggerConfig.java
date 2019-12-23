@@ -76,7 +76,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("Dubbo API")
                 .description("核心基于Springfox Swagger2扩展")
-                .version("1.0.0")
+                .version("1.0.1-SNAPSHOT")
                 .build();
     }
 }
