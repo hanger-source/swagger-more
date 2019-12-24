@@ -36,6 +36,8 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
+
 /**
  * 兼容 alibaba dubbo 和 apache dubbo
  *
@@ -64,7 +66,12 @@ public class ServiceBeans extends AbstractList<ServiceBean> implements Initializ
                 Class<?> serviceClazz = ClassUtils.forName("com.alibaba.dubbo.config.annotation.Service", ClassUtils.getDefaultClassLoader());
                 for (Object object : applicationContext.getBeansWithAnnotation((Class<? extends com.alibaba.dubbo.config.annotation.Service>) serviceClazz).values()) {
                     Class interfaceClass = object.getClass().getAnnotation(com.alibaba.dubbo.config.annotation.Service.class).interfaceClass();
-                    serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                    if (void.class.equals(interfaceClass) && object.getClass().getInterfaces().length > 0) {
+                        interfaceClass = object.getClass().getInterfaces()[0];
+                    }
+                    if (nonNull(interfaceClass)) {
+                        serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                    }
                 }
             }
 
@@ -83,7 +90,12 @@ public class ServiceBeans extends AbstractList<ServiceBean> implements Initializ
                 Class<?> serviceClazz = ClassUtils.forName("org.apache.dubbo.config.annotation.Service", ClassUtils.getDefaultClassLoader());
                 for (Object object : applicationContext.getBeansWithAnnotation((Class<? extends org.apache.dubbo.config.annotation.Service>) serviceClazz).values()) {
                     Class interfaceClass = object.getClass().getAnnotation(org.apache.dubbo.config.annotation.Service.class).interfaceClass();
-                    serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                    if (void.class.equals(interfaceClass) && object.getClass().getInterfaces().length > 0) {
+                        interfaceClass = object.getClass().getInterfaces()[0];
+                    }
+                    if (nonNull(interfaceClass)) {
+                        serviceBeanList.add(new DefaultServiceBean(interfaceClass, object));
+                    }
                 }
             }
         } catch (ClassNotFoundException | BeansException e) {

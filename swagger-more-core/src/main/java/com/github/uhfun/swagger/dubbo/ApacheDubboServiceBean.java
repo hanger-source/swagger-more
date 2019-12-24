@@ -25,7 +25,7 @@ public class ApacheDubboServiceBean implements ServiceBean {
 
     private org.apache.dubbo.config.spring.ServiceBean serviceBean;
 
-    public ApacheDubboServiceBean(org.apache.dubbo.config.spring.ServiceBean serviceBean) {
+    ApacheDubboServiceBean(org.apache.dubbo.config.spring.ServiceBean serviceBean) {
         this.serviceBean = serviceBean;
     }
 

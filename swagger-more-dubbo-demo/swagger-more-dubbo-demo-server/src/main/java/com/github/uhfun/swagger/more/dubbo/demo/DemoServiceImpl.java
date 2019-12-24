@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author fuhangbo
  */
-@Service(interfaceClass = com.github.uhfun.swagger.more.dubbo.demo.api.DemoDubboService.class)
+@Service
 @Component("demoDubboService")
 @Slf4j
 public class DemoServiceImpl implements DemoDubboService {

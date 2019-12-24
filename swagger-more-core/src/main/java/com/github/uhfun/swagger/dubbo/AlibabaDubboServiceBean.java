@@ -26,7 +26,7 @@ public class AlibabaDubboServiceBean implements ServiceBean {
 
     private com.alibaba.dubbo.config.spring.ServiceBean serviceBean;
 
-    public AlibabaDubboServiceBean(com.alibaba.dubbo.config.spring.ServiceBean serviceBean) {
+    AlibabaDubboServiceBean(com.alibaba.dubbo.config.spring.ServiceBean serviceBean) {
         this.serviceBean = serviceBean;
     }
 
