@@ -16,30 +16,23 @@
  *
  *
  */
-package com.github.uhfun.swagger.annotations;
+package com.github.uhfun.swagger.annotaions;
 
-import io.swagger.annotations.ApiParam;
+import com.github.uhfun.swagger.configuration.SwaggerConfiguration;
+import com.github.uhfun.swagger.configuration.WebMvcSupportConfiguration;
+import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author uhfun
+ * @author fuhangbo
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiMethod {
-
-    String value();
-
-    String notes() default "";
-
-    ApiParam[] params() default {};
-
-    String returnDescription() default "";
-
-    boolean hidden() default false;
-
-    boolean deprecated() default false;
+@Import({WebMvcSupportConfiguration.class, SwaggerConfiguration.class})
+public @interface EnableDubboSwagger {
 }
 

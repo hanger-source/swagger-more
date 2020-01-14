@@ -18,7 +18,7 @@
  */
 package com.github.uhfun.swagger.annotaions;
 
-import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,11 +26,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author uhfun
+ * @author fuhangbo
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({ResourceConfig.class, SwaggerConfig.class})
-public @interface EnableSwaggerMore {
+@EnableDubboSwagger
+@EnableWebMvc
+public @interface EnableDubboSwaggerAndWebMvc {
 }
 
