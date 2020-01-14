@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * 演示服务(根据javadoc 生成注解, 运行前执行 mvn package)
- * @author fuhangbo
+ * @author uhfun
  */
 @Api
 public interface DemoDubboService {

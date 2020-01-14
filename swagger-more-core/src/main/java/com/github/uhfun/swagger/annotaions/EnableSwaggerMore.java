@@ -18,8 +18,6 @@
  */
 package com.github.uhfun.swagger.annotaions;
 
-import com.github.uhfun.swagger.configuration.ResourceConfig;
-import com.github.uhfun.swagger.configuration.SwaggerConfig;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -28,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

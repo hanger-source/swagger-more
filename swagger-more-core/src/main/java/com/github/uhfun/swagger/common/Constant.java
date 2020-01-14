@@ -19,7 +19,7 @@
 package com.github.uhfun.swagger.common;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 public class Constant {
     public static final String DEFAULT_PACKAGE_NAME = "com.github.uhfun.swagger.more.";
@@ -28,4 +28,5 @@ public class Constant {
     public static final String DOT = ".";
     public static final String UNDERLINE = "_";
     public static final String COMMA = ",";
+    public static final String BATH_PATH = "/dubbo";
 }

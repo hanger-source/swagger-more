@@ -16,7 +16,7 @@
  *
  *
  */
-package com.github.uhfun.swagger.extension;
+package com.github.uhfun.swagger.springfox;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;

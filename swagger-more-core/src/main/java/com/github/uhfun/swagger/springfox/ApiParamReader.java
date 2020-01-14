@@ -16,7 +16,7 @@
  *
  *
  */
-package com.github.uhfun.swagger.extension;
+package com.github.uhfun.swagger.springfox;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.github.uhfun.swagger.annotations.ApiMethod;
@@ -26,7 +26,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -41,8 +40,6 @@ import springfox.documentation.spring.web.DescriptionResolver;
 
 import java.util.List;
 
-import static com.github.uhfun.swagger.common.Constant.DEFAULT_COMPLEX_OBJECT_SUFFIX;
-import static com.github.uhfun.swagger.common.Constant.GENERATED_PREFIX;
 import static com.google.common.base.Strings.emptyToNull;
 import static springfox.documentation.swagger.common.SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER;
 import static springfox.documentation.swagger.readers.parameter.Examples.examples;
@@ -57,7 +54,6 @@ public class ApiParamReader implements ParameterBuilderPlugin {
 
     private final DescriptionResolver resolver;
 
-    @Autowired
     public ApiParamReader(DescriptionResolver resolver) {
         this.resolver = resolver;
     }
@@ -66,11 +62,13 @@ public class ApiParamReader implements ParameterBuilderPlugin {
     public void apply(ParameterContext context) {
         ResolvedType resolvedType = context.resolvedMethodParameter().getParameterType();
         Class erasedType = resolvedType.getErasedType();
-        if (isGeneratedType(erasedType)) {
-            context.parameterBuilder()
-                    .parameterType("body").name(erasedType.getSimpleName())
-                    .description("Not a real parameter, it is a parameter generated after assembly.");
-            return;
+        context.parameterBuilder()
+                .name(readName(context.resolvedMethodParameter()))
+                .description(resolvedType.getTypeName())
+                .parameterType("query")
+                .hidden(false);
+        if (context.getOperationContext().getParameters().size() == 1 && TypeUtils.isComplexObjectType(erasedType)) {
+            context.parameterBuilder().parameterType("body");
         }
         Optional<ApiParam> optional = readApiParam(context);
         if (optional.isPresent()) {
@@ -78,9 +76,7 @@ public class ApiParamReader implements ParameterBuilderPlugin {
             List<VendorExtension> extensions = buildExtensions(resolvedType);
             context.parameterBuilder().name(emptyToNull(apiParam.name()))
                     .description(emptyToNull(resolver.resolve(apiParam.value())))
-                    .parameterType(TypeUtils.isComplexObjectType(erasedType) ? "body" : "query")
                     .order(SWAGGER_PLUGIN_ORDER)
-                    .hidden(false)
                     .parameterAccess(emptyToNull(apiParam.access()))
                     .defaultValue(emptyToNull(apiParam.defaultValue()))
                     .allowMultiple(apiParam.allowMultiple())
@@ -93,14 +89,18 @@ public class ApiParamReader implements ParameterBuilderPlugin {
         }
     }
 
+    private String readName(ResolvedMethodParameter resolvedMethodParameter) {
+        Optional<String> stringOptional = resolvedMethodParameter.defaultName();
+        if (stringOptional.isPresent()) {
+            return stringOptional.get();
+        }
+        return "arg" + resolvedMethodParameter.getParameterIndex();
+    }
+
     private List<VendorExtension> buildExtensions(ResolvedType resolvedType) {
         List<VendorExtension> extensions = Lists.newArrayList();
         extensions.add(new StringVendorExtension("className", resolvedType.toString()));
         return extensions;
-    }
-
-    private boolean isGeneratedType(Class type) {
-        return type.getSimpleName().startsWith(GENERATED_PREFIX) && type.getSimpleName().endsWith(DEFAULT_COMPLEX_OBJECT_SUFFIX);
     }
 
     private Optional<ApiParam> readApiParam(ParameterContext context) {

@@ -18,55 +18,45 @@
  */
 package com.github.uhfun.swagger.configuration;
 
-import com.github.uhfun.swagger.common.ExtendRequestHandlerSelectors;
-import com.google.common.collect.Sets;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.uhfun.swagger.common.DubboMethodHandlerSelectors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ResponseMessage;
-import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import javax.servlet.ServletContext;
-import java.util.Collections;
 import java.util.List;
 
+import static com.github.uhfun.swagger.common.Constant.BATH_PATH;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.singleton;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
-@Configuration
 @Import(SpringfoxSupportConfiguration.class)
-@ComponentScan(basePackages = "com.github.uhfun.swagger")
-public class SwaggerConfig {
+@ComponentScan(basePackages = "com.souche.swagger.more")
+public class SwaggerConfiguration {
 
     @Bean
-    @Autowired
-    public Docket complete(ServletContext servletContext) {
+    public Docket complete() {
         List<ResponseMessage> responseMessageList = newArrayList();
         return new Docket(SWAGGER_2)
-                .pathProvider(new RelativePathProvider(servletContext) {
-                    @Override
-                    public String getApplicationBasePath() {
-                        return "/dubbo";
-                    }
-                })
                 .apiInfo(apiInfo())
                 .select()
-                .apis(ExtendRequestHandlerSelectors.dubboApi())
-                .paths(PathSelectors.any())
+                .apis(DubboMethodHandlerSelectors.dubboApi())
+                .paths(PathSelectors.ant(BATH_PATH + "/**"))
                 .build()
                 .groupName("dubbo")
-                .produces(Sets.newHashSet("application/json", "text/plain"))
-                .consumes(Collections.singleton("application/json"))
+                .produces(newHashSet(MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.TEXT_PLAIN_VALUE))
+                .consumes(singleton(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, responseMessageList)
                 .globalResponseMessage(RequestMethod.POST, responseMessageList);
@@ -76,7 +66,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("Dubbo API")
                 .description("核心基于Springfox Swagger2扩展")
-                .version("1.0.1-SNAPSHOT")
+                .version("1.0.2-SNAPSHOT")
                 .build();
     }
 }

@@ -6,7 +6,7 @@ import com.github.uhfun.swagger.annotaions.EnableSwaggerMore;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @SpringBootApplication
 //@EnableDubboConfiguration

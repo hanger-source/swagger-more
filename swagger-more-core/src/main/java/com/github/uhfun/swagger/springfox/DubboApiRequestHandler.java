@@ -16,12 +16,15 @@
  *
  *
  */
-package com.github.uhfun.swagger.extension;
+package com.github.uhfun.swagger.springfox;
 
 import com.fasterxml.classmate.ResolvedType;
+import com.fasterxml.classmate.TypeResolver;
+import com.github.uhfun.swagger.webmvc.DubboHandlerMethod;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,24 +44,30 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
+import static springfox.documentation.spring.web.paths.Paths.splitCamelCase;
 
 /**
  * @author uhfun
  */
 @Slf4j
-public class ApiRequestHandler implements RequestHandler {
+public class DubboApiRequestHandler implements RequestHandler {
 
     private final HandlerMethodResolver methodResolver;
-    private final HandlerMethod handlerMethod;
-    private final List<ResolvedMethodParameter> resolvedMethodParameters;
+    private final TypeResolver typeResolver;
+    private final DubboHandlerMethod handlerMethod;
+    private final RequestMappingInfo requestMapping;
+    private List<ResolvedMethodParameter> parameters;
 
-    ApiRequestHandler(HandlerMethodResolver methodResolver,
-                      HandlerMethod handlerMethod,
-                      List<ResolvedMethodParameter> resolvedMethodParameters) {
+    DubboApiRequestHandler(HandlerMethodResolver methodResolver,
+                           TypeResolver typeResolver,
+                           DubboHandlerMethod handlerMethod,
+                           RequestMappingInfo requestMapping) {
         this.methodResolver = methodResolver;
+        this.typeResolver = typeResolver;
         this.handlerMethod = handlerMethod;
-        this.resolvedMethodParameters = resolvedMethodParameters;
+        this.requestMapping = requestMapping;
     }
 
     @Override
@@ -73,19 +82,17 @@ public class ApiRequestHandler implements RequestHandler {
 
     @Override
     public PatternsRequestCondition getPatternsCondition() {
-        String key = "/" + handlerMethod.getMethod().getDeclaringClass().getSimpleName().replace("Impl", "") + "/" + getName();
-        return new PatternsRequestCondition(key);
+        return requestMapping.getPatternsCondition();
     }
 
     @Override
     public String groupName() {
-        Class<?> apiClass = handlerMethod.getBeanType();
-        return apiClass.getInterfaces()[0].getSimpleName();
+        return splitCamelCase(handlerMethod.getInterfaceType().getSimpleName(), "-").replace("/", "").toLowerCase();
     }
 
     @Override
     public String getName() {
-        Method method = handlerMethod.getMethod();
+        Method method = handlerMethod.getRealMethod();
         return Stream.of(method.getDeclaringClass().getDeclaredMethods())
                 .filter(m -> m.getName().equals(method.getName()))
                 .count() == 1
@@ -102,12 +109,12 @@ public class ApiRequestHandler implements RequestHandler {
 
     @Override
     public Set<? extends MediaType> produces() {
-        return Sets.newHashSet(MediaType.APPLICATION_JSON_UTF8, MediaType.TEXT_PLAIN);
+        return requestMapping.getProducesCondition().getProducibleMediaTypes();
     }
 
     @Override
     public Set<? extends MediaType> consumes() {
-        return Sets.newHashSet(MediaType.APPLICATION_JSON_UTF8);
+        return requestMapping.getConsumesCondition().getConsumableMediaTypes();
     }
 
     @Override
@@ -132,12 +139,21 @@ public class ApiRequestHandler implements RequestHandler {
 
     @Override
     public List<ResolvedMethodParameter> getParameters() {
-        return resolvedMethodParameters;
+        if (parameters == null) {
+            if (handlerMethod.isProxy()) {
+                MethodParameter methodParameter = handlerMethod.getMethodParameters()[0];
+                ResolvedType resolvedType = typeResolver.resolve(methodParameter.getParameterType());
+                parameters = singletonList(new ResolvedMethodParameter("param0", methodParameter, resolvedType));
+            } else {
+                parameters = methodResolver.methodParameters(handlerMethod);
+            }
+        }
+        return parameters;
     }
 
     @Override
     public ResolvedType getReturnType() {
-        return methodResolver.methodReturnType(handlerMethod);
+        return typeResolver.resolve(handlerMethod.getReturnType().getGenericParameterType());
     }
 
     @Override
@@ -147,7 +163,7 @@ public class ApiRequestHandler implements RequestHandler {
 
     @Override
     public RequestMappingInfo getRequestMapping() {
-        return null;
+        return requestMapping;
     }
 
     @Override
@@ -157,12 +173,12 @@ public class ApiRequestHandler implements RequestHandler {
 
     @Override
     public RequestHandler combine(RequestHandler other) {
-        return other;
+        return this;
     }
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("ApiRequestHandler{");
+        StringBuffer sb = new StringBuffer("DubboApiRequestHandler{");
         sb.append("key=").append(key());
         sb.append('}');
         return sb.toString();

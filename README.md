@@ -51,7 +51,7 @@
 <dependency>
     <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-annotations</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -61,7 +61,7 @@
 <dependency>
      <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more-core</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -107,7 +107,7 @@
               <docletArtifact>
                  <groupId>com.github.uhfun</groupId>
                  <artifactId>swagger-more-javadoc</artifactId>
-                 <version>1.0.1-SNAPSHOT</version>
+                 <version>1.0.2-SNAPSHOT</version>
               </docletArtifact>
               <docletArtifact>
                 <groupId>your.groupId</groupId>
@@ -234,17 +234,17 @@ Springfox在启动时注入了所有 **`RequestHandler`** 的实现类
 
 官方只有针对mvc场景下的 **`WebMvcRequestHandlerProvider`**的实现
 
-Swagger-more添加了对于暴露的dubbo api的接口实现 **`com.github.uhfun.swagger.extension.ApiRequestHandler`**
+Swagger-more添加了对于暴露的dubbo api的接口实现 **`com.github.uhfun.swagger.springfox.DubboApiRequestHandler`**
 
 以及其他对于用于构造api文档的一些扩展
 
 ```java
-com.github.uhfun.swagger.extension.ApiMethodModelsProvider
-com.github.uhfun.swagger.extension.ApiMethodReader
-com.github.uhfun.swagger.extension.ApiParamReader
-com.github.uhfun.swagger.extension.ApiRequestHandler
-com.github.uhfun.swagger.extension.ApiRequestHandlerProvider
-com.github.uhfun.swagger.extension.ModelExtendsBuilder
+com.github.uhfun.swagger.springfox.ApiMethodModelsProvider
+com.github.uhfun.swagger.springfox.ApiMethodReader
+com.github.uhfun.swagger.springfox.ApiParamReader
+com.github.uhfun.swagger.springfox.DubboApiRequestHandler
+com.github.uhfun.swagger.springfox.ApiRequestHandlerProvider
+com.github.uhfun.swagger.springfox.ModelExtendsBuilder
 ```
 
 

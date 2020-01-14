@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @ApiModel(description = "演示对象")
 @Data

@@ -16,49 +16,60 @@
  *
  *
  */
-package com.github.uhfun.swagger.extension;
+package com.github.uhfun.swagger.springfox;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.github.uhfun.swagger.annotations.ApiMethod;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import springfox.documentation.builders.OperationBuilder;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.ModelReference;
 import springfox.documentation.schema.TypeNameExtractor;
+import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.schema.contexts.ModelContext;
 import springfox.documentation.spi.service.OperationBuilderPlugin;
 import springfox.documentation.spi.service.contexts.OperationContext;
+import springfox.documentation.spi.service.contexts.ParameterContext;
 import springfox.documentation.spring.web.DescriptionResolver;
+import springfox.documentation.spring.web.plugins.DocumentationPluginsManager;
+
+import java.util.List;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.stream.Collectors.toSet;
 import static springfox.documentation.schema.ResolvedTypes.modelRefFactory;
 import static springfox.documentation.schema.Types.isVoid;
 
+
 /**
- * @author uhfun
+ * @author unfun
  */
 @Slf4j
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1001)
 public class ApiMethodReader implements OperationBuilderPlugin {
 
     private final DescriptionResolver resolver;
     private final TypeNameExtractor typeNameExtractor;
+    private final DocumentationPluginsManager pluginsManager;
 
-    @Autowired
-    public ApiMethodReader(DescriptionResolver resolver, TypeNameExtractor typeNameExtractor) {
+    public ApiMethodReader(DescriptionResolver resolver,
+                           TypeNameExtractor typeNameExtractor,
+                           DocumentationPluginsManager pluginsManager) {
         this.resolver = resolver;
         this.typeNameExtractor = typeNameExtractor;
+        this.pluginsManager = pluginsManager;
     }
 
     @Override
@@ -76,9 +87,26 @@ public class ApiMethodReader implements OperationBuilderPlugin {
             builder.deprecated(String.valueOf(apiMethod.deprecated()));
             builder.hidden(apiMethod.hidden());
             builder.uniqueId(context.getGroupName() + context.getName());
+            builder.method(context.httpMethod());
+            builder.consumes(context.consumes().stream().map(MediaType::toString).collect(toSet()));
+            builder.produces(context.produces().stream().map(MediaType::toString).collect(toSet()));
             readTags(context);
             readReturnDescription(context, apiMethod);
+            readParameters(context);
         }
+    }
+
+    private void readParameters(OperationContext context) {
+        List<Parameter> parameterList = Lists.newArrayList();
+        for (ResolvedMethodParameter parameter : context.getParameters()) {
+            ParameterContext parameterContext = new ParameterContext(parameter,
+                    new ParameterBuilder(),
+                    context.getDocumentationContext(),
+                    context.getGenericsNamingStrategy(),
+                    context);
+            parameterList.add(pluginsManager.parameter(parameterContext));
+        }
+        context.operationBuilder().parameters(parameterList);
     }
 
     private void readReturnDescription(OperationContext context, ApiMethod apiMethod) {
@@ -105,11 +133,7 @@ public class ApiMethodReader implements OperationBuilderPlugin {
     private void readTags(OperationContext context) {
         Optional<Api> apiOptional = context.findControllerAnnotation(Api.class);
         if (apiOptional.isPresent()) {
-            String tag;
-            if (apiOptional.get().tags().length == 0 || StringUtils.isEmpty(tag = apiOptional.get().tags()[0])) {
-                tag = context.getGroupName();
-            }
-            context.operationBuilder().tags(newHashSet(tag));
+            context.operationBuilder().tags(newHashSet(apiOptional.get().tags()));
         }
     }
 

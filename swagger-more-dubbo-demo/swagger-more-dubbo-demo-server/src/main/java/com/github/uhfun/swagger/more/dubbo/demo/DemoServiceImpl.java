@@ -7,7 +7,7 @@ import org.apache.dubbo.config.annotation.Service;
 import org.springframework.stereotype.Component;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @Service
 @Component("demoDubboService")

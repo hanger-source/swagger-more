@@ -16,27 +16,17 @@
  *
  *
  */
-package com.github.uhfun.swagger.dubbo;
+package com.github.uhfun.swagger.common;
+
+import com.github.uhfun.swagger.springfox.DubboApiRequestHandler;
+import com.google.common.base.Predicate;
+import springfox.documentation.RequestHandler;
 
 /**
  * @author uhfun
  */
-public class DefaultServiceBean implements ServiceBean {
-    private Class interfaceClass;
-    private Object ref;
-
-    DefaultServiceBean(Class interfaceClass, Object ref) {
-        this.interfaceClass = interfaceClass;
-        this.ref = ref;
-    }
-
-    @Override
-    public Class getInterfaceClass() {
-        return interfaceClass;
-    }
-
-    @Override
-    public Object getRef() {
-        return ref;
+public class DubboMethodHandlerSelectors {
+    public static Predicate<RequestHandler> dubboApi() {
+        return input -> input instanceof DubboApiRequestHandler;
     }
 }

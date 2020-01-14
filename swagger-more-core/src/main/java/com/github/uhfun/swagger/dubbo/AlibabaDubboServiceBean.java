@@ -18,7 +18,6 @@
  */
 package com.github.uhfun.swagger.dubbo;
 
-
 /**
  * @author uhfun
  */
