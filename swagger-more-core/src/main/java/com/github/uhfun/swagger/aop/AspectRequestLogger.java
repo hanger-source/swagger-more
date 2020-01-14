@@ -35,7 +35,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @EnableAspectJAutoProxy
 @Aspect

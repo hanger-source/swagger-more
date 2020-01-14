@@ -36,10 +36,12 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ViewNameMethodReturnValueHandler;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.util.List;
 import java.util.Map;
@@ -72,6 +74,13 @@ public class WebMvcSupportConfiguration extends WebMvcConfigurerAdapter {
         converter.setFastJsonConfig(config);
         converter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON_UTF8));
         return converter;
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        registry.viewResolver(resolver);
+        registry.order(1);
     }
 
     @Override

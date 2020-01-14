@@ -35,9 +35,9 @@ import springfox.documentation.spring.web.ObjectMapperConfigurer;
 import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.plugins.DocumentationPluginsManager;
+import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 import springfox.documentation.spring.web.scanners.MediaTypeReader;
-import springfox.documentation.swagger.web.SwaggerApiListingReader;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2JacksonModule;
@@ -50,18 +50,19 @@ import java.util.List;
 @Configuration
 @ComponentScans({
         @ComponentScan(basePackages = {
+                "springfox.documentation.swagger.web",
                 "springfox.documentation.swagger2.web",
                 "springfox.documentation.schema",
                 "springfox.documentation.swagger.schema",
                 "springfox.documentation.swagger2.mappers",
                 "springfox.documentation.spring.web.plugins"}),
-        @ComponentScan(basePackages = "springfox.documentation.swagger.web",
-                excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SwaggerApiListingReader.class)),
+        @ComponentScan(basePackages = "springfox.documentation.spring.web.plugins",
+                excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebMvcRequestHandlerProvider.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.scanners",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MediaTypeReader.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.operation",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-                        pattern = "^((?!(ApiOperationReader|DefaultOperationReader|OperationParameterReader|CachingOperationNameGenerator)).)*$")),
+                        pattern = "^((?!(ApiOperationReader|DefaultOperationReader|CachingOperationNameGenerator)).)*$")),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.parameter",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
                         pattern = "^((?!(ModelAttributeParameterExpander|ExpandedParameterBuilder|ParameterDataTypeReader)).)*$"))
@@ -115,11 +116,6 @@ public class SpringfoxSupportConfiguration {
     @Bean
     public HandlerMethodResolver methodResolver(TypeResolver resolver) {
         return new HandlerMethodResolver(resolver);
-    }
-
-    @Bean
-    public TypeResolver typeResolver() {
-        return new TypeResolver();
     }
 
     // Followings are custom plugins
