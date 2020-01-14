@@ -112,7 +112,7 @@ public class ProxyClassUtils {
     }
 
     private static CtMethod createInitMethod(CtClass ctClass) throws CannotCompileException {
-        return CtMethod.make("public static void init (com.souche.swagger.more.webMvc.DubboHandlerMethod.HandlerMethodProxy proxy){ " +
+        return CtMethod.make("public static void init (com.github.uhfun.swagger.webmvc.DubboHandlerMethod.HandlerMethodProxy proxy){ " +
                 ctClass.getName() + ".proxy = proxy;}", ctClass);
     }
 

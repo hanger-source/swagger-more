@@ -21,7 +21,6 @@ package com.github.uhfun.swagger.springfox;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.schema.ModelBuilderPlugin;
 import springfox.documentation.spi.schema.contexts.ModelContext;
@@ -32,7 +31,6 @@ import java.lang.reflect.Type;
  * @author uhfun
  */
 @Slf4j
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1001)
 public class ModelExtendsBuilder implements ModelBuilderPlugin {
 

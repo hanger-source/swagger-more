@@ -28,7 +28,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import springfox.documentation.schema.Example;
 import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.service.StringVendorExtension;
@@ -48,7 +47,6 @@ import static springfox.documentation.swagger.readers.parameter.Examples.example
  * @author uhfun
  */
 @Slf4j
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1001)
 public class ApiParamReader implements ParameterBuilderPlugin {
 

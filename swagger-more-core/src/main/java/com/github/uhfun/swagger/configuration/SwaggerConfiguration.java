@@ -20,7 +20,6 @@ package com.github.uhfun.swagger.configuration;
 
 import com.github.uhfun.swagger.common.DubboMethodHandlerSelectors;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,7 +41,6 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
  * @author uhfun
  */
 @Import(SpringfoxSupportConfiguration.class)
-@ComponentScan(basePackages = "com.souche.swagger.more")
 public class SwaggerConfiguration {
 
     @Bean

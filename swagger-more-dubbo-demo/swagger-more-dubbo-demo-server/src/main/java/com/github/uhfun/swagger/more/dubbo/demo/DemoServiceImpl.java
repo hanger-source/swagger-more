@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author uhfun
  */
-@Service
+@Service(interfaceClass = DemoDubboService.class)
 @Component("demoDubboService")
 @Slf4j
 public class DemoServiceImpl implements DemoDubboService {

@@ -135,6 +135,11 @@ public class SpringfoxSupportConfiguration {
     }
 
     @Bean
+    public ApiTagReader apiTagReader() {
+        return new ApiTagReader();
+    }
+
+    @Bean
     public ApiMethodReader apiMethodReader(DescriptionResolver resolver, TypeNameExtractor typeNameExtractor, DocumentationPluginsManager pluginsManager) {
         return new ApiMethodReader(resolver, typeNameExtractor, pluginsManager);
     }

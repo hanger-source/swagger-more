@@ -21,7 +21,6 @@ package com.github.uhfun.swagger.springfox;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.ApiListingBuilderPlugin;
@@ -33,7 +32,6 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
 /**
  * @author uhfun
  */
-@Component
 public class ApiTagReader implements ApiListingBuilderPlugin {
     @Override
     public void apply(ApiListingContext apiListingContext) {

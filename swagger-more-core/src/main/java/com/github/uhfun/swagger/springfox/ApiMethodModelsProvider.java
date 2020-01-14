@@ -26,7 +26,6 @@ import com.google.common.base.Optional;
 import io.swagger.annotations.ApiModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.OperationModelsProviderPlugin;
@@ -42,7 +41,6 @@ import static com.google.common.collect.Lists.newArrayList;
 /**
  * @author uhfun
  */
-@Component
 public class ApiMethodModelsProvider implements OperationModelsProviderPlugin {
 
     private final TypeResolver typeResolver;
