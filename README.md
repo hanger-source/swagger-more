@@ -58,13 +58,13 @@
 
 ## Versions
 
-- 1.0.2-SNAPSHOT
+- [1.0.2-SNAPSHOT](https://github.com/uhfun/swagger-more/tree/1.0.2-SNAPSHOT)
     1. 「 controller查找方法后调用 」改为「 根据dubbo service 生成 RequestMapping 」    
     2. 「 controller参数解析 」改为 「 自定义HandlerMethodArgumentResolver, HandlerMethodReturnValueHandler 」    
     3. 「 controller日志打印 」改为「 @service 注解切面日志 」    
     4.  新增代理方法转换参数    
 
-- 1.0.1-SNAPSHOT
+- [1.0.1-SNAPSHOT](https://github.com/uhfun/swagger-more/tree/1.0.1-SNAPSHOT)
     1. 修复tag为空
     2. 兼容alibaba dubbo 和 apache dubbo
     3. javadoc title为空异常
