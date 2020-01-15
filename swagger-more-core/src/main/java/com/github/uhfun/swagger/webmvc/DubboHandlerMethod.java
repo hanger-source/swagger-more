@@ -78,9 +78,13 @@ public class DubboHandlerMethod extends HandlerMethod {
         HandlerMethod buildProxy() {
             Method methodProxy = method;
             try {
+                // Why should I forward method calls?
+                // I want the method parameter in the swagger document to be an entity without changing the code.
                 if (needMergeParams(method)) {
                     Class generatedParamClass = ProxyClassUtils.mergeParametersIntoClass(method);
+                    // The exposed proxy method is the invokeForward method in the generated class.
                     methodProxy = ReflectionUtils.findMethod(generatedParamClass, "invokeForward", generatedParamClass);
+                    // The invokeForward method will eventually forward the call to the doInvoke method of this class.
                     ReflectionUtils.findMethod(generatedParamClass, "init", HandlerMethodProxy.class).invoke(null, this);
                 }
             } catch (Exception e) {
@@ -90,6 +94,7 @@ public class DubboHandlerMethod extends HandlerMethod {
         }
 
         public Object doInvoke(Object param0) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+            // Convert the fields of the entity class to multiple method parameters, and then call the actual method.
             if (method.getReturnType() != void.class) {
                 return method.invoke(ref, getMethodArgumentValues(param0));
             } else {
