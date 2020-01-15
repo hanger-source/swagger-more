@@ -15,22 +15,41 @@
     <packaging>jar</packaging>
 
     <dependencies>
-<!--        apache dubbo-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--        apache dubbo-->
+        <!--        <dependency>-->
+<!--            <groupId>org.apache.dubbo</groupId>-->
+<!--            <artifactId>dubbo</artifactId>-->
+<!--            <version>2.7.0</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.apache.dubbo</groupId>-->
+<!--            <artifactId>dubbo-spring-boot-starter</artifactId>-->
+<!--            <version>2.7.0</version>-->
+<!--        </dependency>-->
+
+<!--                alibaba dubbo-->
         <dependency>
-            <groupId>org.apache.dubbo</groupId>
+            <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
-            <version>2.7.0</version>
+            <version>2.6.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.dubbo</groupId>
+            <groupId>com.alibaba.spring.boot</groupId>
             <artifactId>dubbo-spring-boot-starter</artifactId>
-            <version>2.7.0</version>
+            <version>2.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>dubbo</artifactId>
+                    <groupId>com.alibaba</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -57,24 +76,6 @@
             </exclusions>
         </dependency>
 
-        <!--        alibaba dubbo-->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba</groupId>-->
-<!--            <artifactId>dubbo</artifactId>-->
-<!--            <version>2.6.3</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.spring.boot</groupId>-->
-<!--            <artifactId>dubbo-spring-boot-starter</artifactId>-->
-<!--            <version>2.0.0</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>dubbo</artifactId>-->
-<!--                    <groupId>com.alibaba</groupId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.javassist</groupId>

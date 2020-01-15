@@ -1,14 +1,16 @@
 package com.github.uhfun.swagger.more.dubbo.demo;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.github.uhfun.swagger.more.dubbo.demo.api.Demo;
 import com.github.uhfun.swagger.more.dubbo.demo.api.DemoDubboService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Service;
+//import org.apache.dubbo.config.annotation.Service;
 import org.springframework.stereotype.Component;
 
 /**
  * @author uhfun
  */
+//@Service(interfaceClass = DemoDubboService.class)
 @Service(interfaceClass = DemoDubboService.class)
 @org.springframework.stereotype.Service("demoDubboService")
 @Slf4j
