@@ -54,7 +54,8 @@
 
 ## How to use
 
-[Demo](https://github.com/uhfun/swagger-more/tree/1.0.2-SNAPSHOT/swagger-more-dubbo-demo)
+[1.0.1-SNAPSHOT Demo](https://github.com/uhfun/swagger-more/tree/1.0.1-SNAPSHOT/swagger-more-dubbo-demo)
+[1.0.2-SNAPSHOT Demo](https://github.com/uhfun/swagger-more/tree/1.0.2-SNAPSHOT/swagger-more-dubbo-demo)
 [移步wiki](https://github.com/uhfun/swagger-more/wiki/How-to-use)
 
 ## Versions
