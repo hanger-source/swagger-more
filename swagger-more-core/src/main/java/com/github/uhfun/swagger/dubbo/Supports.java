@@ -47,10 +47,11 @@ public class Supports {
 
     public static boolean isServiceBean(Class<?> beanType) {
         return (APACHE_DUBBO_SUPPORT && org.apache.dubbo.config.spring.ServiceBean.class.isAssignableFrom(beanType)) ||
-                (ALIBABA_DUBBO_SUPPORT && com.alibaba.dubbo.config.spring.ServiceBean.class.isAssignableFrom(beanType));
+                (ALIBABA_DUBBO_SUPPORT && com.alibaba.dubbo.config.spring.ServiceBean.class.isAssignableFrom(beanType)) ||
+                hasServiceAnnotation(beanType);
     }
 
-    public static boolean hasServiceAnnotation(Class<?> beanType) {
+    private static boolean hasServiceAnnotation(Class<?> beanType) {
         return (ALIBABA_DUBBO_SUPPORT && AnnotatedElementUtils.hasAnnotation(beanType, com.alibaba.dubbo.config.annotation.Service.class));
     }
 

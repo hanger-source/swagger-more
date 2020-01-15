@@ -52,7 +52,7 @@ public class DubboHandlerMethodMapping extends AbstractHandlerMethodMapping<Requ
 
     @Override
     protected boolean isHandler(Class<?> beanType) {
-        return Supports.isServiceBean(beanType) || Supports.hasServiceAnnotation(beanType);
+        return Supports.isServiceBean(beanType);
     }
 
     @Override
