@@ -36,6 +36,9 @@ public class Supports {
         try {
             Class apacheServiceBeanClass = ClassUtils.forName("org.apache.dubbo.config.spring.ServiceBean", ClassUtils.getDefaultClassLoader());
             APACHE_DUBBO_SUPPORT = apacheServiceBeanClass != null;
+        } catch (ClassNotFoundException ignored) {
+        }
+        try {
             Class alibabaServiceBeanClass = ClassUtils.forName("com.alibaba.dubbo.config.spring.ServiceBean", ClassUtils.getDefaultClassLoader());
             ALIBABA_DUBBO_SUPPORT = alibabaServiceBeanClass != null;
         } catch (ClassNotFoundException ignored) {
@@ -48,24 +51,25 @@ public class Supports {
     }
 
     public static boolean hasServiceAnnotation(Class<?> beanType) {
-        return (APACHE_DUBBO_SUPPORT && AnnotatedElementUtils.hasAnnotation(beanType, org.apache.dubbo.config.annotation.Service.class)) ||
-                (ALIBABA_DUBBO_SUPPORT && AnnotatedElementUtils.hasAnnotation(beanType, com.alibaba.dubbo.config.annotation.Service.class));
+        return (ALIBABA_DUBBO_SUPPORT && AnnotatedElementUtils.hasAnnotation(beanType, com.alibaba.dubbo.config.annotation.Service.class));
     }
 
     public static ServiceBean wrapServiceBean(Object handler) {
         if (APACHE_DUBBO_SUPPORT) {
-            org.apache.dubbo.config.annotation.Service service = AnnotationUtils.findAnnotation(handler.getClass(), org.apache.dubbo.config.annotation.Service.class);
-            if (service != null) {
-                handler = new org.apache.dubbo.config.spring.ServiceBean(service);
-            }
             if (handler instanceof org.apache.dubbo.config.spring.ServiceBean) {
                 handler = new ApacheDubboServiceBean((org.apache.dubbo.config.spring.ServiceBean) handler);
             }
         }
         if (ALIBABA_DUBBO_SUPPORT) {
+            // Alibaba Dubbo , Annotated services are not registered as beans
             com.alibaba.dubbo.config.annotation.Service service = AnnotationUtils.findAnnotation(handler.getClass(), com.alibaba.dubbo.config.annotation.Service.class);
             if (service != null) {
-                handler = new com.alibaba.dubbo.config.spring.ServiceBean(service);
+                com.alibaba.dubbo.config.spring.ServiceBean serviceBean = new com.alibaba.dubbo.config.spring.ServiceBean(service);
+                serviceBean.setRef(handler);
+                if (service.interfaceClass().equals(void.class) && handler.getClass().getInterfaces().length > 0) {
+                    serviceBean.setInterface(handler.getClass().getInterfaces()[0]);
+                }
+                handler = serviceBean;
             }
             if (handler instanceof com.alibaba.dubbo.config.spring.ServiceBean) {
                 handler = new AlibabaDubboServiceBean((com.alibaba.dubbo.config.spring.ServiceBean) handler);
