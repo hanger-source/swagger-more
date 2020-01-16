@@ -53,6 +53,7 @@ public class ProxyUtils {
             return method;
         }
         try {
+            // Set the static handlerMethodProxy field
             ReflectionUtils.findMethod(clazz, HANDLER_METHOD_PROXY_SETTER, DubboHandlerMethod.HandlerMethodProxy.class)
                     .invoke(null, handlerMethodProxy);
         } catch (Exception e) {
@@ -81,10 +82,13 @@ public class ProxyUtils {
                     }
                     ctClass.addField(createField(parameter, apiParam, ctClass));
                 }
+                // static HandlerMethodProxy proxy
                 CtField actualMethodField = new CtField(ClassPool.getDefault().get(DubboHandlerMethod.HandlerMethodProxy.class.getName()), "proxy", ctClass);
                 actualMethodField.setModifiers(Modifier.STATIC);
                 ctClass.addField(actualMethodField);
+                // public Object forwardInvocation(T clazz) throws Throwable {}
                 ctClass.addMethod(createForwardInvocationMethod(apiMethod, ctClass));
+                // public static setHandlerMethodProxy(HandlerMethodProxy proxy)
                 ctClass.addMethod(createInitMethod(ctClass));
                 ctClass.writeFile("target/classes");
                 return ctClass.toClass();
