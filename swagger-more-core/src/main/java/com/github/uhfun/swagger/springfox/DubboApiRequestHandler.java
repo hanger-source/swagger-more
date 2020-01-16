@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -41,7 +40,6 @@ import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 
 import java.lang.annotation.*;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -56,16 +54,11 @@ import static springfox.documentation.spring.web.paths.Paths.splitCamelCase;
  * @author uhfun
  */
 @Slf4j
+@DubboApiRequestHandler.RequestBodyHolder
 public class DubboApiRequestHandler implements RequestHandler {
 
-    @RequestBodyHolder
-    private static RequestBody REQUEST_BODY_ANN;
-
-    static {
-        Field field = ReflectionUtils.findField(DubboApiRequestHandler.class, "REQUEST_BODY_ANN");
-        REQUEST_BODY_ANN = AnnotationUtils.findAnnotation(field, RequestBodyHolder.class).value();
-    }
-
+    private static final RequestBody REQUEST_BODY_ANN = AnnotationUtils.findAnnotation(
+            DubboApiRequestHandler.class, RequestBodyHolder.class).value();
     private final HandlerMethodResolver methodResolver;
     private final TypeResolver typeResolver;
     private final DubboHandlerMethod handlerMethod;
@@ -201,7 +194,7 @@ public class DubboApiRequestHandler implements RequestHandler {
         return sb.toString();
     }
 
-    @Target(ElementType.FIELD)
+    @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface RequestBodyHolder {
