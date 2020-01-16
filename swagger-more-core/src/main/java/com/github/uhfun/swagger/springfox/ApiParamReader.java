@@ -39,6 +39,8 @@ import springfox.documentation.spring.web.DescriptionResolver;
 
 import java.util.List;
 
+import static com.github.uhfun.swagger.common.Constant.DEFAULT_COMPLEX_OBJECT_SUFFIX;
+import static com.github.uhfun.swagger.common.Constant.GENERATED_PREFIX;
 import static com.google.common.base.Strings.emptyToNull;
 import static springfox.documentation.swagger.common.SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER;
 import static springfox.documentation.swagger.readers.parameter.Examples.examples;
@@ -67,6 +69,12 @@ public class ApiParamReader implements ParameterBuilderPlugin {
                 .hidden(false);
         if (context.getOperationContext().getParameters().size() == 1 && TypeUtils.isComplexObjectType(erasedType)) {
             context.parameterBuilder().parameterType("body");
+        }
+        String erasedTypeSimpleName = erasedType.getSimpleName();
+        if (erasedTypeSimpleName.startsWith(GENERATED_PREFIX) && erasedType.getName().endsWith(DEFAULT_COMPLEX_OBJECT_SUFFIX)) {
+            context.parameterBuilder().name(erasedTypeSimpleName)
+                    .description("Not a real parameter, it is a parameter generated after assembly.");
+            return;
         }
         Optional<ApiParam> optional = readApiParam(context);
         if (optional.isPresent()) {

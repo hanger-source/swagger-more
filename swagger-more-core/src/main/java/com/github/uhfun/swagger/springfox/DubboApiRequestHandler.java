@@ -25,7 +25,6 @@ import com.github.uhfun.swagger.webmvc.DubboHandlerMethod;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -97,7 +96,7 @@ public class DubboApiRequestHandler implements RequestHandler {
 
     @Override
     public String getName() {
-        Method method = handlerMethod.getRealMethod();
+        Method method = handlerMethod.getMethod();
         return Stream.of(method.getDeclaringClass().getDeclaredMethods())
                 .filter(m -> m.getName().equals(method.getName()))
                 .count() == 1
@@ -145,11 +144,9 @@ public class DubboApiRequestHandler implements RequestHandler {
     @Override
     public List<ResolvedMethodParameter> getParameters() {
         if (parameters == null) {
-            if (handlerMethod.isProxy()) {
-                MethodParameter methodParameter = handlerMethod.getMethodParameters()[0];
-                ResolvedType resolvedType = typeResolver.resolve(methodParameter.getParameterType());
-                parameters = singletonList(new ResolvedMethodParameter("param0", methodParameter, resolvedType)
-                        .annotate(REQUEST_BODY_ANN));
+            if (handlerMethod.needMergeParams()) {
+                ResolvedType resolvedType = typeResolver.resolve(handlerMethod.getFakeMethodParameter());
+                parameters = singletonList(new ResolvedMethodParameter(0, "param0", singletonList(REQUEST_BODY_ANN), resolvedType));
             } else {
                 parameters = methodResolver.methodParameters(handlerMethod);
                 ResolvedMethodParameter param0;
@@ -163,7 +160,7 @@ public class DubboApiRequestHandler implements RequestHandler {
 
     @Override
     public ResolvedType getReturnType() {
-        return typeResolver.resolve(handlerMethod.getReturnType().getGenericParameterType());
+        return methodResolver.methodReturnType(handlerMethod);
     }
 
     @Override
