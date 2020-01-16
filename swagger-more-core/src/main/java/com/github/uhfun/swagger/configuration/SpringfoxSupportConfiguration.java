@@ -62,7 +62,7 @@ import java.util.List;
                 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MediaTypeReader.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.operation",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-                        pattern = "^((?!(ApiOperationReader|DefaultOperationReader|CachingOperationNameGenerator)).)*$")),
+                        pattern = "^((?!(ApiOperationReader|DefaultOperationReader|OperationParameterReader|CachingOperationNameGenerator)).)*$")),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.parameter",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
                         pattern = "^((?!(ModelAttributeParameterExpander|ExpandedParameterBuilder|ParameterDataTypeReader)).)*$"))

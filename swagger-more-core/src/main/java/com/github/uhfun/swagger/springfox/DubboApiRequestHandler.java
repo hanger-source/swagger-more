@@ -20,6 +20,7 @@ package com.github.uhfun.swagger.springfox;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;
+import com.github.uhfun.swagger.util.TypeUtils;
 import com.github.uhfun.swagger.webmvc.DubboHandlerMethod;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -27,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
@@ -37,7 +40,8 @@ import springfox.documentation.RequestHandlerKey;
 import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -53,6 +57,14 @@ import static springfox.documentation.spring.web.paths.Paths.splitCamelCase;
  */
 @Slf4j
 public class DubboApiRequestHandler implements RequestHandler {
+
+    @RequestBodyHolder
+    private static RequestBody REQUEST_BODY_ANN;
+
+    static {
+        Field field = ReflectionUtils.findField(DubboApiRequestHandler.class, "REQUEST_BODY_ANN");
+        REQUEST_BODY_ANN = AnnotationUtils.findAnnotation(field, RequestBodyHolder.class).value();
+    }
 
     private final HandlerMethodResolver methodResolver;
     private final TypeResolver typeResolver;
@@ -143,9 +155,14 @@ public class DubboApiRequestHandler implements RequestHandler {
             if (handlerMethod.isProxy()) {
                 MethodParameter methodParameter = handlerMethod.getMethodParameters()[0];
                 ResolvedType resolvedType = typeResolver.resolve(methodParameter.getParameterType());
-                parameters = singletonList(new ResolvedMethodParameter("param0", methodParameter, resolvedType));
+                parameters = singletonList(new ResolvedMethodParameter("param0", methodParameter, resolvedType)
+                        .annotate(REQUEST_BODY_ANN));
             } else {
                 parameters = methodResolver.methodParameters(handlerMethod);
+                ResolvedMethodParameter param0;
+                if (parameters.size() == 1 && TypeUtils.isComplexObjectType((param0 = parameters.get(0)).getParameterType().getErasedType())) {
+                    parameters.set(0, param0.annotate(REQUEST_BODY_ANN));
+                }
             }
         }
         return parameters;
@@ -182,5 +199,12 @@ public class DubboApiRequestHandler implements RequestHandler {
         sb.append("key=").append(key());
         sb.append('}');
         return sb.toString();
+    }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface RequestBodyHolder {
+        RequestBody value() default @RequestBody;
     }
 }

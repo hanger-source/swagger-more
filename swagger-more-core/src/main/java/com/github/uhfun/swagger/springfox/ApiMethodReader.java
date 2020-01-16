@@ -92,7 +92,7 @@ public class ApiMethodReader implements OperationBuilderPlugin {
             builder.produces(context.produces().stream().map(MediaType::toString).collect(toSet()));
             readTags(context);
             readReturnDescription(context, apiMethod);
-            readParameters(context);
+//            readParameters(context);
         }
     }
 
