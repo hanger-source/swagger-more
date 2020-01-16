@@ -28,13 +28,14 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ReflectionUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.stream.Stream;
 
 import static com.github.uhfun.swagger.common.Constant.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
@@ -42,9 +43,26 @@ import static java.util.stream.Collectors.joining;
  * @author uhfun
  */
 @Slf4j
-public class ProxyClassUtils {
+public class ProxyUtils {
 
-    public static Class mergeParametersIntoClass(Method method) {
+    public static Method createMethodProxy(Method method, DubboHandlerMethod.HandlerMethodProxy handlerMethodProxy) {
+        Class clazz = mergeParametersIntoClass(method);
+        Method methodProxy;
+        if (isNull(clazz) || isNull(methodProxy = ReflectionUtils.findMethod(clazz, FORWARD_INVOCATION, clazz))) {
+            log.warn("Create method proxy failed.");
+            return method;
+        }
+        try {
+            ReflectionUtils.findMethod(clazz, HANDLER_METHOD_PROXY_SETTER, DubboHandlerMethod.HandlerMethodProxy.class)
+                    .invoke(null, handlerMethodProxy);
+        } catch (Exception e) {
+            log.warn("Set handlerMethodProxy failed.", e);
+            return method;
+        }
+        return methodProxy;
+    }
+
+    private static Class mergeParametersIntoClass(Method method) {
         Parameter[] parameters = method.getParameters();
         String generatedClassName = generateName(method);
         ClassPool pool = ClassPool.getDefault();
@@ -63,11 +81,10 @@ public class ProxyClassUtils {
                     }
                     ctClass.addField(createField(parameter, apiParam, ctClass));
                 }
-                CtField proxyField = new CtField(ClassPool.getDefault().get(DubboHandlerMethod.HandlerMethodProxy.class.getName()), "proxy", ctClass);
-                proxyField.setModifiers(Modifier.STATIC);
-                ctClass.addField(proxyField);
-                ctClass.addInterface(pool.get(Serializable.class.getName()));
-                ctClass.addMethod(createDoInvokeMethod(method, apiMethod, ctClass));
+                CtField actualMethodField = new CtField(ClassPool.getDefault().get(DubboHandlerMethod.HandlerMethodProxy.class.getName()), "proxy", ctClass);
+                actualMethodField.setModifiers(Modifier.STATIC);
+                ctClass.addField(actualMethodField);
+                ctClass.addMethod(createForwardInvocationMethod(apiMethod, ctClass));
                 ctClass.addMethod(createInitMethod(ctClass));
                 ctClass.writeFile("target/classes");
                 return ctClass.toClass();
@@ -112,19 +129,16 @@ public class ProxyClassUtils {
     }
 
     private static CtMethod createInitMethod(CtClass ctClass) throws CannotCompileException {
-        return CtMethod.make("public static void init (com.github.uhfun.swagger.webmvc.DubboHandlerMethod.HandlerMethodProxy proxy){ " +
+        return CtMethod.make("public static void " + HANDLER_METHOD_PROXY_SETTER +
+                " (com.github.uhfun.swagger.webmvc.DubboHandlerMethod.HandlerMethodProxy proxy){ " +
                 ctClass.getName() + ".proxy = proxy;}", ctClass);
     }
 
-    private static CtMethod createDoInvokeMethod(Method method, ApiMethod apiMethod, CtClass declaring) throws CannotCompileException {
-        boolean noReturn = method.getReturnType().equals(void.class);
-        String format = "public static " + (noReturn ? "void" : "java.lang.Object") + " invokeForward (%s param0) throws java.lang.NoSuchFieldException, java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException {\n" +
-                "           if (proxy != null) { \n" +
-                (noReturn ? "   proxy.doInvoke(param0);" : "return proxy.doInvoke(param0);") +
-                "            }\n" +
-                (noReturn ? "" : "return null;") +
-                "        }";
-        String src = String.format(format, declaring.getName());
+    private static CtMethod createForwardInvocationMethod(ApiMethod apiMethod, CtClass declaring) throws CannotCompileException {
+        String format = "public static Object %s (%s param0) throws java.lang.Throwable { " +
+                "return proxy != null ? proxy.doInvoke(new Object[]{param0}) : null;" +
+                "}";
+        String src = String.format(format, FORWARD_INVOCATION, declaring.getName());
         CtMethod ctMethod = CtMethod.make(src, declaring);
         if (nonNull(apiMethod)) {
             ConstPool constPool = declaring.getClassFile().getConstPool();

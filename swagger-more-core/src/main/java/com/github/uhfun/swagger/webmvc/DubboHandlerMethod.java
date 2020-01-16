@@ -20,13 +20,12 @@ package com.github.uhfun.swagger.webmvc;
 
 import com.github.uhfun.swagger.annotations.ApiMethod;
 import com.github.uhfun.swagger.dubbo.ServiceBean;
-import com.github.uhfun.swagger.util.ProxyClassUtils;
+import com.github.uhfun.swagger.util.ProxyUtils;
 import com.github.uhfun.swagger.util.TypeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
@@ -44,7 +43,7 @@ public class DubboHandlerMethod extends HandlerMethod {
     private final Method realMethod;
 
     DubboHandlerMethod(ServiceBean serviceBean, Method method) {
-        super(new HandlerMethodProxy(serviceBean, method).buildProxy());
+        super(new HandlerMethodProxy(serviceBean, method).build());
         this.serviceBean = serviceBean;
         realMethod = method;
     }
@@ -75,48 +74,34 @@ public class DubboHandlerMethod extends HandlerMethod {
             this.method = method;
         }
 
-        HandlerMethod buildProxy() {
-            Method methodProxy = method;
-            try {
-                // Why should I forward method calls?
-                // I want the method parameter in the swagger document to be an entity without changing the code.
-                if (needMergeParams(method)) {
-                    Class generatedParamClass = ProxyClassUtils.mergeParametersIntoClass(method);
-                    // The exposed proxy method is the invokeForward method in the generated class.
-                    methodProxy = ReflectionUtils.findMethod(generatedParamClass, "invokeForward", generatedParamClass);
-                    // The invokeForward method will eventually forward the call to the doInvoke method of this class.
-                    ReflectionUtils.findMethod(generatedParamClass, "init", HandlerMethodProxy.class).invoke(null, this);
-                }
-            } catch (Exception e) {
-                log.error("Build proxy failed.", e);
-            }
+        // Why should I forward method calls?
+        // I want the method parameter in the swagger document to be an entity without changing the code.
+        HandlerMethod build() {
+            // The exposed proxy method is the invokeForward method in the generated class.
+            Method methodProxy = needMergeParams(method) ? ProxyUtils.createMethodProxy(method, this) : method;
+            // The invokeForward method will eventually forward the call to the doInvoke method of this class.
             return new HandlerMethod(ref, methodProxy);
         }
 
-        public Object doInvoke(Object param0) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        public Object doInvoke(Object[] actualArgs) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
             // Convert the fields of the entity class to multiple method parameters, and then call the actual method.
-            if (method.getReturnType() != void.class) {
-                return method.invoke(ref, getMethodArgumentValues(param0));
-            } else {
-                method.invoke(ref, getMethodArgumentValues(param0));
+            if (actualArgs == null || actualArgs.length < 1) {
+                return null;
             }
-            return null;
-        }
-
-        private Object[] getMethodArgumentValues(Object param0) throws NoSuchFieldException, IllegalAccessException {
-            ApiMethod apiMethod = AnnotatedElementUtils.findMergedAnnotation(method, ApiMethod.class);
             Object[] args = new Object[method.getParameterCount()];
-            if (param0 != null) {
+            Object arg0 = actualArgs[0];
+            if (arg0 != null) {
+                ApiMethod apiMethod = AnnotatedElementUtils.findMergedAnnotation(method, ApiMethod.class);
                 Parameter[] parameters = method.getParameters();
                 for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
                     Parameter p = parameters[i];
                     String paramName = apiMethod == null || apiMethod.params().length < i ? p.getName() : apiMethod.params()[i].name();
-                    Field field = param0.getClass().getField(paramName);
+                    Field field = arg0.getClass().getField(paramName);
                     field.setAccessible(true);
-                    args[i] = field.get(param0);
+                    args[i] = field.get(arg0);
                 }
             }
-            return args;
+            return method.invoke(ref, args);
         }
 
         private boolean needMergeParams(Method method) {

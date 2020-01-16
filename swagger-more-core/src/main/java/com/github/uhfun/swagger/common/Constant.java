@@ -29,4 +29,6 @@ public class Constant {
     public static final String UNDERLINE = "_";
     public static final String COMMA = ",";
     public static final String BATH_PATH = "/dubbo";
+    public static final String FORWARD_INVOCATION = "forwardInvocation";
+    public static final String HANDLER_METHOD_PROXY_SETTER = "setHandlerMethodProxy";
 }
