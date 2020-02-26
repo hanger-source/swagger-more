@@ -29,10 +29,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static java.util.Objects.nonNull;
 
 /**
  * @author uhfun
@@ -45,8 +48,9 @@ public class AspectRequestLogger {
     @Around("@within(org.springframework.stereotype.Service)")
     public Object log(ProceedingJoinPoint point) throws Throwable {
         MethodSignature methodSignature = ((MethodSignature) point.getSignature());
-        if (AnnotatedElementUtils.hasAnnotation(methodSignature.getMethod(), ApiMethod.class)) {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (nonNull(requestAttributes) && AnnotatedElementUtils.hasAnnotation(methodSignature.getMethod(), ApiMethod.class)) {
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
             String address = WebUtils.getRemoteAddr(request);
             String className = methodSignature.getDeclaringTypeName();
             String methodName = methodSignature.getMethod().getName();
