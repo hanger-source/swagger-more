@@ -57,6 +57,7 @@
 [1.0.1-SNAPSHOT Demo](https://github.com/uhfun/swagger-more/tree/1.0.1-SNAPSHOT/swagger-more-dubbo-demo)
 [1.0.2-SNAPSHOT Demo](https://github.com/uhfun/swagger-more/tree/1.0.2-SNAPSHOT/swagger-more-dubbo-demo)
 [移步wiki](https://github.com/uhfun/swagger-more/wiki/How-to-use)
+or [博客](https://uhfun.cn/tech/2020/01/15/Swagger-more如何使用.html)
 
 ## Versions
 
