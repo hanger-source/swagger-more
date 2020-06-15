@@ -1,5 +1,5 @@
 # swagger-more
-[![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more) ![jdk1.8](https://img.shields.io/badge/jdk-1.8-blue.svg) 
+[![Build Status](https://travis-ci.org/uhfun/swagger-more.svg?branch=master)](https://travis-ci.org/uhfun/swagger-more) [![Join the chat at https://gitter.im/uhfun_opoen_source/swagger-more](https://badges.gitter.im/uhfun_opoen_source/swagger-more.svg)](https://gitter.im/uhfun_opoen_source/swagger-more?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Join the chat at https://gitter.im/swagger-more/swagger-more-issue](https://badges.gitter.im/swagger-more/swagger-more-issue.svg)](https://gitter.im/swagger-more/swagger-more-issue?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![jdk1.8](https://img.shields.io/badge/jdk-1.8-blue.svg) 
 
 ## About
 
