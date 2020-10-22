@@ -58,7 +58,7 @@ public class SwaggerMoreDoclet {
         // 调试入口
         String[] docArgs = new String[]{"-doclet", SwaggerMoreDoclet.class.getName(),
                 System.getProperty("user.dir") +
-                        "/swagger-more-annotations/src/main/java/com/github/uhfun/swagger/annotations/demoApi/AuthorityService.java",
+                        "/swagger-more-annotations/src/main/java/demo/DemoDubboService.java",
                 "-classDir", System.getProperty("user.dir") +
                 "/swagger-more-annotations/target/classes"};
         com.sun.tools.javadoc.Main.execute(docArgs);

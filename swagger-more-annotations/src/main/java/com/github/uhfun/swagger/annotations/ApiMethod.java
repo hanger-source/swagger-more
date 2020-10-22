@@ -20,16 +20,14 @@ package com.github.uhfun.swagger.annotations;
 
 import io.swagger.annotations.ApiParam;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * @author uhfun
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface ApiMethod {
 
     String value();

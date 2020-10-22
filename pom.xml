@@ -6,7 +6,7 @@
 
     <groupId>com.github.uhfun</groupId>
     <artifactId>swagger-more</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>swagger-more</name>

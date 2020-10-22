@@ -18,17 +18,15 @@
  */
 package com.github.uhfun.swagger.common;
 
+import com.github.uhfun.swagger.springfox.DubboApiRequestHandler;
+import com.google.common.base.Predicate;
+import springfox.documentation.RequestHandler;
+
 /**
  * @author uhfun
  */
-public class Constant {
-    public static final String DEFAULT_PACKAGE_NAME = "com.github.uhfun.swagger.more.";
-    public static final String GENERATED_PREFIX = "Generated_";
-    public static final String DEFAULT_COMPLEX_OBJECT_SUFFIX = "DTO";
-    public static final String DOT = ".";
-    public static final String UNDERLINE = "_";
-    public static final String COMMA = ",";
-    public static final String BATH_PATH = "/dubbo";
-    public static final String FORWARD_INVOCATION = "forwardInvocation";
-    public static final String HANDLER_METHOD_PROXY_SETTER = "setHandlerMethodProxy";
+public class DubboMethodHandlerSelectors {
+    public static Predicate<RequestHandler> dubboApi() {
+        return input -> input instanceof DubboApiRequestHandler;
+    }
 }

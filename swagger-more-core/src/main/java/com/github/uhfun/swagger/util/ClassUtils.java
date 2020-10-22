@@ -18,7 +18,9 @@
  */
 package com.github.uhfun.swagger.util;
 
+import com.github.uhfun.swagger.annotations.ApiMethod;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
@@ -26,9 +28,15 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.AnnotationUtils;
 
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.stream.Stream;
+
+import static com.github.uhfun.swagger.common.Constant.*;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.joining;
 
 /**
  * @author uhfun
@@ -36,16 +44,24 @@ import java.util.Objects;
 @Slf4j
 public class ClassUtils {
 
-    public static Class make(String className, Class[] fieldTypes, List<String> names, List<String> values) {
+    public static Class mergeParametersIntoClass(Method method) {
+        Parameter[] parameters = method.getParameters();
+        String generatedClassName = generateName(method);
         ClassPool pool = ClassPool.getDefault();
         CtClass ctClass;
         try {
-            ctClass = pool.get(className);
+            ctClass = pool.get(generatedClassName);
         } catch (NotFoundException notFoundException) {
-            ctClass = pool.makeClass(className);
+            ctClass = pool.makeClass(generatedClassName);
             try {
-                for (int i = 0; i < fieldTypes.length; i++) {
-                    ctClass.addField(createField(fieldTypes[i], names.get(i), values.get(i), ctClass));
+                ApiMethod apiMethod = AnnotationUtils.findAnnotation(method, ApiMethod.class);
+                ApiParam apiParam = null;
+                for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
+                    Parameter parameter = parameters[i];
+                    if (nonNull(apiMethod) && apiMethod.params().length >= i) {
+                        apiParam = apiMethod.params()[i];
+                    }
+                    ctClass.addField(createField(parameter, apiParam, ctClass));
                 }
                 ctClass.writeFile("target/classes");
                 return ctClass.toClass();
@@ -53,9 +69,9 @@ public class ClassUtils {
                 log.error("Dynamically generated class error :", e);
             }
         }
-        if (Objects.nonNull(ctClass)) {
+        if (nonNull(ctClass)) {
             try {
-                return pool.getClassLoader().loadClass(className);
+                return pool.getClassLoader().loadClass(generatedClassName);
             } catch (ClassNotFoundException e) {
                 log.error("ClassNotFoundException : ", e);
             }
@@ -63,15 +79,26 @@ public class ClassUtils {
         return null;
     }
 
-    private static CtField createField(Class aClass, String name, String value, CtClass ctClass) throws NotFoundException, CannotCompileException {
-        ClassPool.getDefault().insertClassPath(new ClassClassPath(aClass));
-        CtField field = new CtField(ClassPool.getDefault().get(aClass.getName()), name, ctClass);
-        field.setModifiers(javassist.Modifier.PUBLIC);
+    private static String generateName(Method method) {
+        return DEFAULT_PACKAGE_NAME +
+                method.getDeclaringClass().getSimpleName() + DOT +
+                GENERATED_PREFIX + method.getName() + UNDERLINE +
+                Stream.of(method.getParameterTypes()).map(Class::getSimpleName).collect(joining("_")) +
+                DEFAULT_COMPLEX_OBJECT_SUFFIX;
+    }
+
+    private static CtField createField(Parameter parameter, ApiParam apiParam, CtClass ctClass) throws NotFoundException, CannotCompileException {
+        Class fieldType = parameter.getType();
+        String fieldName = nonNull(apiParam) ? apiParam.name() : parameter.getName();
+        String fieldValue = nonNull(apiParam) ? apiParam.value() : parameter.getName();
+        ClassPool.getDefault().insertClassPath(new ClassClassPath(fieldType));
+        CtField field = new CtField(ClassPool.getDefault().get(fieldType.getName()), fieldName, ctClass);
+        field.setModifiers(Modifier.PUBLIC);
         ConstPool constPool = ctClass.getClassFile().getConstPool();
         AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
         Annotation ann = new Annotation(ApiModelProperty.class.getName(), constPool);
-        ann.addMemberValue("value", new StringMemberValue(value, constPool));
-        ann.addMemberValue("name", new StringMemberValue(name, constPool));
+        ann.addMemberValue("value", new StringMemberValue(fieldValue, constPool));
+        ann.addMemberValue("name", new StringMemberValue(fieldName, constPool));
         ann.addMemberValue("required", new BooleanMemberValue(true, constPool));
         attr.addAnnotation(ann);
         field.getFieldInfo().addAttribute(attr);

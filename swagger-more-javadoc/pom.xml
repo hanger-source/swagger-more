@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.github.uhfun</groupId>
         <artifactId>swagger-more</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>swagger-more-javadoc</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>swagger-more-javadoc</name>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.github.uhfun</groupId>
             <artifactId>swagger-more-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sun</groupId>

@@ -23,3 +23,8 @@ target/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+swagger-more-annotations/src/main/java/demo/
+swagger-more-dubbo-demo/target/*
+swagger-more-dubbo-demo/*/target/*
+

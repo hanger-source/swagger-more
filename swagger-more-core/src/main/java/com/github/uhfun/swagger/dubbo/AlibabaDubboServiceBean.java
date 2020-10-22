@@ -16,19 +16,26 @@
  *
  *
  */
-package com.github.uhfun.swagger.common;
+package com.github.uhfun.swagger.dubbo;
 
 /**
  * @author uhfun
  */
-public class Constant {
-    public static final String DEFAULT_PACKAGE_NAME = "com.github.uhfun.swagger.more.";
-    public static final String GENERATED_PREFIX = "Generated_";
-    public static final String DEFAULT_COMPLEX_OBJECT_SUFFIX = "DTO";
-    public static final String DOT = ".";
-    public static final String UNDERLINE = "_";
-    public static final String COMMA = ",";
-    public static final String BATH_PATH = "/dubbo";
-    public static final String FORWARD_INVOCATION = "forwardInvocation";
-    public static final String HANDLER_METHOD_PROXY_SETTER = "setHandlerMethodProxy";
+public class AlibabaDubboServiceBean implements ServiceBean {
+
+    private com.alibaba.dubbo.config.spring.ServiceBean serviceBean;
+
+    AlibabaDubboServiceBean(com.alibaba.dubbo.config.spring.ServiceBean serviceBean) {
+        this.serviceBean = serviceBean;
+    }
+
+    @Override
+    public Class getInterfaceClass() {
+        return serviceBean.getInterfaceClass();
+    }
+
+    @Override
+    public Object getRef() {
+        return serviceBean.getRef();
+    }
 }

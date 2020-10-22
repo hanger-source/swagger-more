@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.uhfun</groupId>
+        <artifactId>swagger-more-dubbo-demo</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>swagger-more-dubbo-demo-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.github.uhfun</groupId>
+            <artifactId>swagger-more-annotations</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <doclet>com.github.uhfun.swagger.doclet.SwaggerMoreDoclet</doclet>
+                            <docletArtifacts>
+                                <docletArtifact>
+                                    <groupId>com.github.uhfun</groupId>
+                                    <artifactId>swagger-more-javadoc</artifactId>
+                                    <version>1.0.2-SNAPSHOT</version>
+                                </docletArtifact>
+                                <docletArtifact>
+                                    <groupId>com.github.uhfun</groupId>
+                                    <artifactId>swagger-more-dubbo-demo-api</artifactId>
+                                    <version>0.0.1-SNAPSHOT</version>
+                                </docletArtifact>
+                            </docletArtifacts>
+                            <additionalOptions>-classDir ${project.build.outputDirectory}</additionalOptions>
+                            <sourcepath>${project.build.sourceDirectory}</sourcepath>
+                            <subpackages>com.github.uhfun.swagger.more.dubbo.demo.api</subpackages>
+                            <useStandardDocletOptions>false</useStandardDocletOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

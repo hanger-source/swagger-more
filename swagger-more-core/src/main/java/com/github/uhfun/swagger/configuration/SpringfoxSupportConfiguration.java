@@ -19,10 +19,13 @@
 package com.github.uhfun.swagger.configuration;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.github.uhfun.swagger.springfox.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.plugin.core.config.EnablePluginRegistries;
+import springfox.documentation.schema.TypeNameExtractor;
 import springfox.documentation.service.PathDecorator;
 import springfox.documentation.spi.service.*;
 import springfox.documentation.spi.service.contexts.Defaults;
@@ -31,15 +34,18 @@ import springfox.documentation.spring.web.DocumentationCache;
 import springfox.documentation.spring.web.ObjectMapperConfigurer;
 import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
+import springfox.documentation.spring.web.plugins.DocumentationPluginsManager;
+import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
 import springfox.documentation.spring.web.readers.operation.HandlerMethodResolver;
 import springfox.documentation.spring.web.scanners.MediaTypeReader;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2JacksonModule;
 
 import java.util.List;
 
 /**
- * @author fuhangbo
+ * @author uhfun
  */
 @Configuration
 @ComponentScans({
@@ -50,6 +56,8 @@ import java.util.List;
                 "springfox.documentation.swagger.schema",
                 "springfox.documentation.swagger2.mappers",
                 "springfox.documentation.spring.web.plugins"}),
+        @ComponentScan(basePackages = "springfox.documentation.spring.web.plugins",
+                excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebMvcRequestHandlerProvider.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.scanners",
                 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = MediaTypeReader.class)),
         @ComponentScan(basePackages = "springfox.documentation.spring.web.readers.operation",
@@ -72,6 +80,7 @@ import java.util.List;
         ApiListingScannerPlugin.class
 })
 @Conditional({SpringfoxSupportConfiguration.EnableSwagger2MissingConditional.class})
+@ConditionalOnMissingBean(annotation = EnableSwagger2.class)
 public class SpringfoxSupportConfiguration {
 
     @Bean
@@ -109,15 +118,42 @@ public class SpringfoxSupportConfiguration {
         return new HandlerMethodResolver(resolver);
     }
 
+    // Followings are custom plugins
+
     @Bean
-    public TypeResolver typeResolver() {
-        return new TypeResolver();
+    public DubboApiRequestHandlerProvider apiRequestHandlerProvider(HandlerMethodResolver methodResolver, TypeResolver typeResolver) {
+        return new DubboApiRequestHandlerProvider(methodResolver, typeResolver);
+    }
+
+    @Bean
+    public ApiParamReader apiParamReader(DescriptionResolver resolver) {
+        return new ApiParamReader(resolver);
+    }
+
+    @Bean
+    public ApiTagReader apiTagReader() {
+        return new ApiTagReader();
+    }
+
+    @Bean
+    public ApiMethodReader apiMethodReader(DescriptionResolver resolver, TypeNameExtractor typeNameExtractor, DocumentationPluginsManager pluginsManager) {
+        return new ApiMethodReader(resolver, typeNameExtractor, pluginsManager);
+    }
+
+    @Bean
+    public ApiMethodModelsProvider apiMethodModelsProvider(TypeResolver typeResolver) {
+        return new ApiMethodModelsProvider(typeResolver);
+    }
+
+    @Bean
+    public ModelExtendsBuilder modelExtendsBuilder() {
+        return new ModelExtendsBuilder();
     }
 
     static final class EnableSwagger2MissingConditional implements Condition {
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            // 没有添加@EnableSwagger2 启用这个配置
+            // Non-spring Boot applications do not add @EnableSwagger2 to enable this configuration
             return !context.getRegistry().containsBeanDefinition(Swagger2DocumentationConfiguration.class.getName());
         }
     }
